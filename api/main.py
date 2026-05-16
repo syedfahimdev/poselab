@@ -46,6 +46,7 @@ import knowledge
 import openai_image
 import prompts
 import ratelimit
+import runware_image
 from auth import Identity, identify
 from providers import ProviderConfig, get_provider_config, safe_repr
 from models import (
@@ -154,12 +155,14 @@ def server_config(
         "ai_configured": cfg.ai_configured,
         "openai_image_configured": cfg.openai_image_configured,
         "fal_configured": cfg.fal_configured,
+        "runware_configured": cfg.runware_configured,
         "active_image_provider": cfg.resolved_image_provider(),
         "ai_base_url": cfg.ai_base_url,
         "vision_model": cfg.vision_model,
         "text_model": cfg.text_model,
         "openai_image_model": cfg.openai_image_model,
         "fal_model": cfg.fal_model,
+        "runware_model": cfg.runware_model,
     }
 
 
@@ -499,7 +502,11 @@ async def generate(
 
     provider = cfg.resolved_image_provider()
     try:
-        if provider == "fal":
+        if provider == "runware":
+            raw, duration_ms, model_id = await runware_image.generate(
+                prompt=body.prompt, image_bytes=source_bytes, cfg=cfg
+            )
+        elif provider == "fal":
             raw, duration_ms, model_id = await fal.generate(
                 prompt=body.prompt, image_bytes=source_bytes, cfg=cfg
             )
@@ -511,10 +518,17 @@ async def generate(
         logger.exception(
             "generate failed (provider=%s, cfg=%s)", provider, safe_repr(cfg)
         )
+        # Surface the underlying provider message if we have one — much more
+        # actionable than a generic "check your settings" for cases like
+        # insufficient credits, model not found, content-policy blocks, etc.
+        # We trim it to avoid dumping huge stack traces into the response.
+        provider_msg = str(exc)
+        if len(provider_msg) > 400:
+            provider_msg = provider_msg[:400] + "…"
         raise HTTPException(
             status_code=502,
             detail=(
-                f"Image generation failed via {provider}. "
+                f"Image generation failed via {provider}: {provider_msg}. "
                 "Check your API key + model in Settings."
             ),
         ) from exc

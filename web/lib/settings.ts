@@ -19,7 +19,7 @@
 
 const KEY = "poselab_settings_v1";
 
-export type ImageProvider = "openai" | "fal" | "auto";
+export type ImageProvider = "openai" | "fal" | "runware" | "auto";
 
 export type AppSettings = {
   version: 1;
@@ -36,6 +36,8 @@ export type AppSettings = {
   openaiImageModel: string;
   falKey: string;
   falModel: string;
+  runwareKey: string;
+  runwareModel: string;
 };
 
 /** A blank-but-defaults settings object. Used on first run. */
@@ -50,6 +52,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   openaiImageModel: "gpt-image-2",
   falKey: "",
   falModel: "fal-ai/flux-pro/kontext",
+  runwareKey: "",
+  runwareModel: "openai:gpt-image@2",
 };
 
 /**
@@ -159,7 +163,7 @@ export function hasAnyAiKey(s: AppSettings = getSettings()): boolean {
 }
 
 export function hasAnyImageKey(s: AppSettings = getSettings()): boolean {
-  return Boolean(s.openaiKey || s.falKey);
+  return Boolean(s.openaiKey || s.falKey || s.runwareKey);
 }
 
 /**
@@ -178,5 +182,7 @@ export function buildProviderHeaders(s: AppSettings = getSettings()): Record<str
   if (s.openaiImageModel) h["X-OpenAI-Image-Model"] = s.openaiImageModel;
   if (s.falKey) h["X-Fal-Key"] = s.falKey;
   if (s.falModel) h["X-Fal-Model"] = s.falModel;
+  if (s.runwareKey) h["X-Runware-Key"] = s.runwareKey;
+  if (s.runwareModel) h["X-Runware-Model"] = s.runwareModel;
   return h;
 }

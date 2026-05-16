@@ -286,21 +286,41 @@ export function SettingsModal({ open, onClose }: Props) {
                 className="h-11 px-3 rounded-xl bg-surface border border-border text-foreground focus:outline-none focus:border-accent"
               >
                 <option value="auto">Auto — pick whichever is configured</option>
+                <option value="runware">
+                  Runware — one key, many models (gpt-image-2, Flux, Grok)
+                </option>
                 <option value="openai">
-                  OpenAI gpt-image-2 (best identity preservation)
+                  OpenAI gpt-image-2 direct (best identity preservation)
                 </option>
                 <option value="fal">fal.ai FLUX Pro Kontext (cheaper)</option>
               </select>
             </div>
 
             <Field
-              label="OpenAI API key (for image gen)"
+              label="Runware API key"
+              id="runware-key"
+              type="password"
+              value={s.runwareKey}
+              onChange={(v) => setField("runwareKey", v)}
+              placeholder="..."
+              hint="Unified access to gpt-image-2, Flux, Grok Imagine, and more. Get one at runware.ai"
+            />
+            <Field
+              label="Runware model"
+              id="runware-model"
+              value={s.runwareModel}
+              onChange={(v) => setField("runwareModel", v)}
+              placeholder="openai:gpt-image@2"
+              hint='Examples: "openai:gpt-image@2", "runware:100@1" (Flux Schnell), "xai:grok-imagine"'
+            />
+            <Field
+              label="OpenAI API key (direct, for image gen)"
               id="openai-key"
               type="password"
               value={s.openaiKey}
               onChange={(v) => setField("openaiKey", v)}
               placeholder="sk-..."
-              hint="Required for OpenAI gpt-image-2. Get one at platform.openai.com/api-keys"
+              hint="Use if you prefer direct OpenAI billing. Get one at platform.openai.com/api-keys"
             />
             <Field
               label="fal.ai key"
@@ -309,7 +329,7 @@ export function SettingsModal({ open, onClose }: Props) {
               value={s.falKey}
               onChange={(v) => setField("falKey", v)}
               placeholder="key:value"
-              hint="Required for FLUX Pro Kontext. Get one at fal.ai/dashboard/keys"
+              hint="Required only if you select fal as the image provider. Get one at fal.ai/dashboard/keys"
             />
           </section>
 

@@ -43,14 +43,16 @@ H_AI_VISION_MODEL = "x-ai-vision-model"
 H_AI_TEXT_MODEL = "x-ai-text-model"
 
 # Image gen
-H_IMAGE_PROVIDER = "x-image-provider"  # "openai" | "fal" | "auto"
+H_IMAGE_PROVIDER = "x-image-provider"  # "openai" | "fal" | "runware" | "auto"
 H_OPENAI_KEY = "x-openai-key"
 H_OPENAI_IMAGE_MODEL = "x-openai-image-model"
 H_FAL_KEY = "x-fal-key"
 H_FAL_MODEL = "x-fal-model"
+H_RUNWARE_KEY = "x-runware-key"
+H_RUNWARE_MODEL = "x-runware-model"
 
 
-ImageProvider = Literal["openai", "fal", "auto"]
+ImageProvider = Literal["openai", "fal", "runware", "auto"]
 
 
 @dataclass(frozen=True)
@@ -73,6 +75,8 @@ class ProviderConfig:
     openai_image_model: str
     fal_key: str
     fal_model: str
+    runware_key: str
+    runware_model: str
 
     # ─── computed helpers ─────────────────────────────────────────────────
 
@@ -88,10 +92,19 @@ class ProviderConfig:
     def fal_configured(self) -> bool:
         return bool(self.fal_key)
 
+    @property
+    def runware_configured(self) -> bool:
+        return bool(self.runware_key)
+
     def resolved_image_provider(self) -> str:
-        """Pick a provider name. 'auto' resolves to first-configured."""
+        """Pick a provider name. 'auto' resolves to first-configured.
+
+        Order: runware (multi-model, often cheapest) → openai → fal.
+        """
         if self.image_provider != "auto":
             return self.image_provider
+        if self.runware_configured:
+            return "runware"
         if self.openai_image_configured:
             return "openai"
         if self.fal_configured:
@@ -113,7 +126,7 @@ def get_provider_config(request: Request) -> ProviderConfig:
         .lower()
         .strip()
     )
-    if image_provider_raw not in ("openai", "fal", "auto"):
+    if image_provider_raw not in ("openai", "fal", "runware", "auto"):
         image_provider_raw = "auto"
 
     return ProviderConfig(
@@ -148,6 +161,10 @@ def get_provider_config(request: Request) -> ProviderConfig:
         fal_model=_header_or_env(
             request, H_FAL_MODEL, "FAL_MODEL", "fal-ai/flux-pro/kontext"
         ),
+        runware_key=_header_or_env(request, H_RUNWARE_KEY, "RUNWARE_API_KEY"),
+        runware_model=_header_or_env(
+            request, H_RUNWARE_MODEL, "RUNWARE_MODEL", "openai:gpt-image@2"
+        ),
     )
 
 
@@ -167,4 +184,5 @@ def safe_repr(cfg: ProviderConfig) -> dict[str, str]:
         "image_provider": cfg.image_provider,
         "openai_key": fp(cfg.openai_key),
         "fal_key": fp(cfg.fal_key),
+        "runware_key": fp(cfg.runware_key),
     }
