@@ -136,7 +136,20 @@ def root():
     return {
         "service": "poselab-api",
         "version": app.version,
+        "git_rev": os.getenv("GIT_REV", "unknown"),
         "status": "ok",
+    }
+
+
+@app.get("/version")
+def version():
+    """Build identity — useful for sanity-checking which commit the
+    running server is on. Pairs with the frontend's NEXT_PUBLIC_GIT_REV
+    so users can verify a `git pull` actually propagated.
+    """
+    return {
+        "version": app.version,
+        "git_rev": os.getenv("GIT_REV", "unknown"),
     }
 
 

@@ -29,6 +29,24 @@ Get a free OpenRouter key for the text+vision side at <https://openrouter.ai/key
 
 > Don't have `make`? Two terminals — `cd api && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/uvicorn main:app --reload` and `cd web && pnpm install && pnpm dev --port 3030`.
 
+### Stay on the latest version
+
+```bash
+make up         # = git pull + reinstall changed deps + start servers
+make version    # show the running git commit (also visible in the page footer)
+```
+
+### Test from your phone (same wifi or Tailscale)
+
+`make dev` auto-detects your LAN IP + Tailscale hostname and allow-lists
+them with Next.js. The startup banner prints the URLs you can open on your
+phone (e.g. `http://<your-lan-ip>:3030`).
+
+**iOS Safari caching gotcha:** after pulling new code, force-refresh on the
+phone (long-press the refresh icon → *Reload Without Cache Empty Content*).
+Safari aggressively caches old JS otherwise. Verify the footer shows the
+new commit hash — that's your "did the fresh code land" sanity check.
+
 ---
 
 ## Features

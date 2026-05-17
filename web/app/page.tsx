@@ -144,10 +144,18 @@ function HowItWorks() {
 }
 
 function Footer() {
+  const rev = process.env.NEXT_PUBLIC_GIT_REV ?? "";
   return (
     <footer className="w-full px-5 sm:px-8 pb-8 pt-6 border-t border-border">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 text-sm text-muted flex-wrap">
-        <span>© {new Date().getFullYear()} PoseLab</span>
+        <span>
+          © {new Date().getFullYear()} PoseLab{" "}
+          {rev && (
+            <code className="ml-2 text-[11px] bg-surface border border-border rounded px-1.5 py-0.5">
+              build {rev}
+            </code>
+          )}
+        </span>
         <div className="flex items-center gap-5">
           <Link href="/settings" className="hover:text-foreground transition-colors">
             Cheat sheets
