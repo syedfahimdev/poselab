@@ -68,8 +68,11 @@ logger = logging.getLogger("poselab")
 
 app = FastAPI(
     title="PoseLab API",
-    version="0.3.0",
-    description="Photo enhancement prompt generator + fal.ai image generation.",
+    version="0.4.0",
+    description=(
+        "Photo enhancement prompt generator with BYOK provider config and "
+        "3 image-gen backends (Runware / OpenAI gpt-image-2 / fal.ai FLUX)."
+    ),
 )
 
 ALLOWED_ORIGINS = [

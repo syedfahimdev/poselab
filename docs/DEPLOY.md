@@ -5,8 +5,15 @@ deploy patterns are commonly useful:
 
 ## 1. Local-only (single user, no public URL)
 
-Already covered in the [README quickstart](../README.md). `git clone`,
-install deps, run two terminals. Default; works on Linux, macOS, Windows.
+`git clone` then either:
+
+```bash
+make install     # one-time
+make dev         # both servers, mixed output, Ctrl-C stops both
+```
+
+…or the manual two-terminal flow from the [README quickstart](../README.md).
+Works on Linux, macOS, Windows.
 
 ## 2. Share over a private network (Tailscale, LAN, VPN)
 
@@ -67,6 +74,7 @@ API_BASE_URL=https://your-app.vercel.app/api-proxy
 CORS_ALLOWED_ORIGINS=https://your-app.vercel.app
 # Optional server-side defaults — users can still BYOK via Settings:
 # OPENROUTER_API_KEY=
+# RUNWARE_API_KEY=
 # OPENAI_API_KEY=
 # FAL_KEY=
 EOF
@@ -125,9 +133,23 @@ Two ways to supply provider API keys:
 1. **BYOK (default)** — leave the server's env empty. Users add their own
    keys via the Settings panel. Best for personal projects or small groups
    where each user supplies their own credentials.
-2. **Server-side defaults** — set `OPENROUTER_API_KEY`, `OPENAI_API_KEY`,
-   `FAL_KEY` etc. in the backend's `.env`. Users with no Settings keys
-   automatically inherit these. Best when you're paying for AI on your
+2. **Server-side defaults** — set `OPENROUTER_API_KEY`, `RUNWARE_API_KEY`,
+   `OPENAI_API_KEY`, `FAL_KEY` etc. in the backend's `.env`. Users with
+   no Settings keys inherit these. Best when you're paying for AI on your
    users' behalf — but watch your bill.
 
 Both modes coexist. Per-request headers always take precedence over env.
+
+### Image provider auto-resolution
+
+When `IMAGE_PROVIDER` is unset (default), PoseLab picks the first one
+configured in this order:
+
+```
+runware → openai → fal → mock (echo source bytes)
+```
+
+Reason for the order: Runware gives the broadest model catalog per key
+(gpt-image-2 + Flux Pro + Grok Imagine + others), OpenAI direct has the
+strongest identity preservation for gpt-image-2, fal.ai is the cheapest
+for FLUX. Override with `IMAGE_PROVIDER=fal` (etc.) to lock one.

@@ -24,7 +24,7 @@ sends user-provided keys as per-request headers (BYOK).
               │            FastAPI (api/)                 │
               │                                           │
               │   /analyze    → ai.py → OpenRouter/etc.   │
-              │   /generate   → openai_image.py | fal.py  │
+              │   /generate   → runware | openai | fal    │
               │   /upload     → storage.py (local fs)     │
               │   /share/*    → db.py (JSON files)        │
               │   /config     → providers.py (resolves    │
@@ -127,7 +127,8 @@ connection.
 | `api/ai.py` | OpenAI-compatible chat-completions client; vision + text |
 | `api/openai_image.py` | OpenAI `/v1/images/edits` adapter (gpt-image-2 default) |
 | `api/fal.py` | fal.ai queue API client (FLUX Pro Kontext default) |
-| `api/providers.py` | The BYOK header-vs-env resolution layer |
+| `api/runware_image.py` | Runware unified-API adapter (gpt-image-2 + Flux + Grok + more under one key) |
+| `api/providers.py` | The BYOK header-vs-env resolution layer; auto-resolves provider in order `runware → openai → fal → mock` |
 | `web/lib/settings.ts` | localStorage settings + `buildProviderHeaders()` |
 | `web/components/SettingsModal.tsx` | The Settings UI (provider preset, key, models, image-provider) |
 | `web/lib/share.ts` | Web Share API helper for sharing photo + prompt to ChatGPT / Gemini |
