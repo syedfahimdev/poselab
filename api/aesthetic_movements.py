@@ -30,6 +30,12 @@ class AestheticMovement:
     hex_palette: tuple[str, ...]  # 3-5 hex values describing the grade
     light_signature: str  # the light recipe in plain words
     craftsmanship_phrases: tuple[str, ...]  # phrases that signal "pro work"
+    # Scenarios this movement fits best — picker uses these to disambiguate
+    # when multiple movements share the same style_key. "all" means it works
+    # for any scenario. Examples:
+    #   ("portrait", "group")  → only matches portrait + group scenarios
+    #   ("all",)               → catch-all default
+    scenarios: tuple[str, ...] = ("all",)
 
 
 MOVEMENTS: tuple[AestheticMovement, ...] = (
@@ -182,16 +188,84 @@ MOVEMENTS: tuple[AestheticMovement, ...] = (
             "the result of a frame that didn't need to be saved",
         ),
     ),
+    # ─────────────────────────────────────────────────────────────────────
+    # SECOND Editorial movement — scenario-disambiguated. Picker prefers
+    # this one when the photo is architecture / interior / food, falling
+    # back to "Magazine Restraint" for portrait/group.
+    # ─────────────────────────────────────────────────────────────────────
+    AestheticMovement(
+        style_key="Editorial",
+        name="Brooklyn Window Light",
+        one_line=(
+            "The Architectural Digest / Kinfolk interior aesthetic — soft "
+            "north-facing window light, neutral linens, ceramics, plants, "
+            "the lived-in stillness of a quiet morning."
+        ),
+        lineage=(
+            "Pia Ulin (Kinfolk interiors), Trevor Tondro (Architectural "
+            "Digest), Saul Leiter (urban-still-life sensibility)"
+        ),
+        hex_palette=(
+            "#F4EDE2",  # bone-white wall / linen
+            "#D9C9B0",  # warm oat midtone
+            "#A88E72",  # tobacco wood / leather
+            "#5D513F",  # bistre shadow
+            "#1F1A14",  # near-black anchor in shadows
+        ),
+        light_signature=(
+            "single tall north-facing window casting soft directional light "
+            "across the scene; long shadows from low winter sun; no fill "
+            "except gentle ambient bounce from neutral walls"
+        ),
+        craftsmanship_phrases=(
+            "Kinfolk-magazine restraint with master-level styling",
+            "the patience of a still life that was waited for, not posed",
+            "neutral palette controlled to within 5% saturation variance",
+            "highlight rolloff like film, no clipped white",
+        ),
+        scenarios=("architecture", "food", "macro", "other"),
+    ),
 )
 
 
-# Build a fast lookup
-_BY_STYLE: dict[str, AestheticMovement] = {m.style_key: m for m in MOVEMENTS}
+# ─── Picker ──────────────────────────────────────────────────────────────────
+# Build a style → list-of-movements index. Order preserved from MOVEMENTS,
+# so the FIRST entry for a style is the default unless a more-specific
+# scenario match is available.
+_BY_STYLE: dict[str, list[AestheticMovement]] = {}
+for _m in MOVEMENTS:
+    _BY_STYLE.setdefault(_m.style_key, []).append(_m)
 
 
-def movement_for(style: str) -> AestheticMovement | None:
-    """Return the named movement for a chosen style, or None for unknown."""
-    return _BY_STYLE.get(style.strip())
+def movement_for(
+    style: str, scenario: str | None = None
+) -> AestheticMovement | None:
+    """Pick the best aesthetic movement for a style (+ optional scenario).
+
+    Priority:
+      1. A movement whose `scenarios` explicitly lists this scenario.
+      2. A movement whose `scenarios` is ("all",) — generic for the style.
+      3. Otherwise: the first registered for the style key.
+      4. None when the style key isn't registered at all.
+
+    This is what makes "Editorial" mean different things for a portrait
+    (Magazine Restraint) vs an architecture shot (Brooklyn Window Light).
+    """
+    candidates = _BY_STYLE.get(style.strip())
+    if not candidates:
+        return None
+
+    if scenario:
+        # First: exact scenario match
+        for m in candidates:
+            if scenario in m.scenarios:
+                return m
+        # Then: "all" generic for the style
+        for m in candidates:
+            if "all" in m.scenarios:
+                return m
+
+    return candidates[0]
 
 
 def format_movement_for_prompt(m: AestheticMovement) -> str:

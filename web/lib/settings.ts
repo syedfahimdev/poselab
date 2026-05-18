@@ -19,7 +19,7 @@
 
 const KEY = "poselab_settings_v1";
 
-export type ImageProvider = "openai" | "fal" | "runware" | "auto";
+export type ImageProvider = "openai" | "fal" | "runware" | "stability" | "auto";
 
 export type AppSettings = {
   version: 1;
@@ -38,6 +38,8 @@ export type AppSettings = {
   falModel: string;
   runwareKey: string;
   runwareModel: string;
+  stabilityKey: string;
+  stabilityModel: string;
 };
 
 /** A blank-but-defaults settings object. Used on first run. */
@@ -54,6 +56,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   falModel: "fal-ai/flux-pro/kontext",
   runwareKey: "",
   runwareModel: "openai:gpt-image@2",
+  stabilityKey: "",
+  stabilityModel: "sd3.5-large",
 };
 
 /**
@@ -104,6 +108,24 @@ export const AI_PRESETS: Array<{
     textModel: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
     keyHint: "...",
     signupUrl: "https://api.together.xyz/settings/api-keys",
+  },
+  {
+    id: "xai",
+    label: "xAI Grok (vision via Grok-2)",
+    baseUrl: "https://api.x.ai/v1",
+    visionModel: "grok-2-vision-latest",
+    textModel: "grok-2-latest",
+    keyHint: "xai-...",
+    signupUrl: "https://console.x.ai/team/default/api-keys",
+  },
+  {
+    id: "mistral",
+    label: "Mistral (Pixtral vision)",
+    baseUrl: "https://api.mistral.ai/v1",
+    visionModel: "pixtral-large-latest",
+    textModel: "mistral-large-latest",
+    keyHint: "...",
+    signupUrl: "https://console.mistral.ai/api-keys",
   },
   {
     id: "litellm",
@@ -163,7 +185,7 @@ export function hasAnyAiKey(s: AppSettings = getSettings()): boolean {
 }
 
 export function hasAnyImageKey(s: AppSettings = getSettings()): boolean {
-  return Boolean(s.openaiKey || s.falKey || s.runwareKey);
+  return Boolean(s.openaiKey || s.falKey || s.runwareKey || s.stabilityKey);
 }
 
 /**
@@ -184,5 +206,7 @@ export function buildProviderHeaders(s: AppSettings = getSettings()): Record<str
   if (s.falModel) h["X-Fal-Model"] = s.falModel;
   if (s.runwareKey) h["X-Runware-Key"] = s.runwareKey;
   if (s.runwareModel) h["X-Runware-Model"] = s.runwareModel;
+  if (s.stabilityKey) h["X-Stability-Key"] = s.stabilityKey;
+  if (s.stabilityModel) h["X-Stability-Model"] = s.stabilityModel;
   return h;
 }

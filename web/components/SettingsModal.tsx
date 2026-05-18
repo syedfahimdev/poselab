@@ -292,6 +292,9 @@ export function SettingsModal({ open, onClose }: Props) {
                 <option value="openai">
                   OpenAI gpt-image-2 direct (best identity preservation)
                 </option>
+                <option value="stability">
+                  Stability AI SD3.5 (img2img, creative reinterpretation)
+                </option>
                 <option value="fal">fal.ai FLUX Pro Kontext (cheaper)</option>
               </select>
             </div>
@@ -330,6 +333,23 @@ export function SettingsModal({ open, onClose }: Props) {
               onChange={(v) => setField("falKey", v)}
               placeholder="key:value"
               hint="Required only if you select fal as the image provider. Get one at fal.ai/dashboard/keys"
+            />
+            <Field
+              label="Stability AI key"
+              id="stability-key"
+              type="password"
+              value={s.stabilityKey}
+              onChange={(v) => setField("stabilityKey", v)}
+              placeholder="sk-..."
+              hint="For Stable Diffusion 3.5 img2img. Get one at platform.stability.ai/account/keys"
+            />
+            <Field
+              label="Stability model"
+              id="stability-model"
+              value={s.stabilityModel}
+              onChange={(v) => setField("stabilityModel", v)}
+              placeholder="sd3.5-large"
+              hint='Options: "sd3.5-medium" (fastest), "sd3.5-large" (default), "sd3.5-large-turbo"'
             />
           </section>
 

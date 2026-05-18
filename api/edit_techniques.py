@@ -488,6 +488,40 @@ TECHNIQUES: tuple[EditTechnique, ...] = (
         scenarios=("portrait", "group", "action"),
     ),
     # ── Skin tone correction ────────────────────────────────────────────────
+    # ── Macro / depth-of-field ──────────────────────────────────────────────
+    EditTechnique(
+        name="Focus stacking simulation",
+        sources=("Don Komarechka", "Levon Biss", "Helicon Focus tradition"),
+        what_it_does=(
+            "Mimics a focus-stacked macro: front-to-back sharpness across "
+            "the subject while the background falls off into smooth bokeh. "
+            "Real focus stacks blend dozens of frames; the prompt-only "
+            "shortcut asks the model to render the subject as if it were "
+            "the composite of 50+ alignment-blended frames."
+        ),
+        when_to_use=(
+            "Macro work, jewelry product shots, anything where the subject "
+            "has depth (insect, flower, watch) but the photographer wants "
+            "every detail sharp without losing background separation."
+        ),
+        ai_translation=(
+            "render with focus-stacked macro sharpness — every detail on "
+            "the subject in tack-sharp focus from front to back as if "
+            "composited from 50+ aligned frames, while the background "
+            "remains creamy out-of-focus bokeh; preserve the appearance "
+            "of natural depth, not flat all-in-focus rendering"
+        ),
+        style_affinities=("Natural", "Editorial"),
+        issue_keywords=(
+            "shallow",
+            "depth of field",
+            "front softness",
+            "petals lost",
+            "wings soft",
+            "DOF",
+        ),
+        scenarios=("macro", "food"),
+    ),
     EditTechnique(
         name="Skin tone correction (targeted hue/saturation)",
         sources=("Lightroom HSL panel", "Pratik Naik beauty retouching"),

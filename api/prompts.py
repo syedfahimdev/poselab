@@ -41,6 +41,7 @@ Categories:
 - action     : movement / sport / kids running / pet jumping
 - architecture: building, interior, exterior, room
 - pets       : dog, cat, kid (under ~12) as the subject (use this even if multiple kids)
+- macro      : extreme close-up — insect, water droplet, flower petal, fabric texture, jewelry at 1:1+ magnification
 - other      : doesn't fit any above (still life, abstract, product, screenshot, etc.)
 
 Return ONLY valid JSON in this shape:
@@ -201,7 +202,10 @@ adjectives.
     # Named aesthetic movement for the chosen style — pattern adapted from
     # Anthropic's canvas-design (named movements) + theme-factory (hex
     # palettes) + frontend-design (commit to a bold direction).
-    movement = movement_for(style)
+    # Pass scenario so the picker can disambiguate when multiple movements
+    # share a style_key (e.g. Editorial → "Magazine Restraint" for portraits,
+    # "Brooklyn Window Light" for architecture / food interiors)
+    movement = movement_for(style, scenario=scenario)
     aesthetic_section = (
         f"""
 NAMED AESTHETIC MOVEMENT to commit to (don't hedge into generic look):

@@ -75,6 +75,7 @@ async def detect_scenario(
         "action",
         "architecture",
         "pets",
+        "macro",
         "other",
     }:
         scenario = "other"

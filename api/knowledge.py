@@ -37,6 +37,7 @@ Scenario = Literal[
     "action",
     "architecture",
     "pets",
+    "macro",
     "other",
 ]
 
@@ -697,6 +698,110 @@ PETS = ScenarioKB(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# MACRO — close-up nature, insects, water droplets, textures
+# ─────────────────────────────────────────────────────────────────────────────
+MACRO = ScenarioKB(
+    label="Macro / close-up",
+    lineage=(
+        Photographer(
+            "Thomas Shahan",
+            "Eye-level jumping-spider portraits — radical empathy via getting "
+            "the camera's plane below the subject. Vibrant black backgrounds, "
+            "frontal flash diffused through small softboxes.",
+        ),
+        Photographer(
+            "Don Komarechka",
+            "Snowflake + water-droplet macro through focus stacking and "
+            "polarized refraction. 100+ frame stacks aligned and blended.",
+        ),
+        Photographer(
+            "Levon Biss",
+            "Microsculpture insect series — 8000+ frames per specimen, "
+            "lit zone-by-zone, composited into a 'scientific hyperreal' "
+            "aesthetic that shows what you couldn't see in person.",
+        ),
+        Photographer(
+            "Edward Weston",
+            "Pepper #30, the cabbage leaf, the nautilus shell — organic "
+            "form abstracted into sculpture. Black-and-white, sharp, "
+            "front-lit, deliberate composition.",
+        ),
+        Photographer(
+            "Karl Blossfeldt",
+            "Early-20th-century botanical close-ups; German precision, "
+            "flat backgrounds, plants framed like architectural studies.",
+        ),
+    ),
+    principles=(
+        Principle(
+            rule="Focus stack — depth of field at 1:1 magnification is 1-2mm; one frame can never carry the whole subject.",
+            why="True macro inherently has razor-thin DOF; trying to stop down to f/22 to compensate introduces diffraction blur that's worse than the DOF problem you're solving.",
+            trace="Komarechka, Biss — focus stacking is THE macro craft",
+            violations=(
+                "single-frame macro with only the front 2mm sharp",
+                "f/22 used to 'get everything in focus' — diffraction kills detail",
+                "subject sharp but petals/wings/legs lost to softness",
+            ),
+        ),
+        Principle(
+            rule="Get below or at eye level with the subject — never above.",
+            why="Insects, flowers, droplets shot from above look like specimens. Shot from eye level they look like subjects with agency.",
+            trace="Thomas Shahan — radical empathy via camera angle",
+            violations=(
+                "shot looking down at a flower / insect",
+                "camera at hand-held human standing-height for ground subjects",
+                "no sense the subject and viewer are at the same scale",
+            ),
+        ),
+        Principle(
+            rule="One diffused light source close to the subject — not a ring flash, not ambient.",
+            why="Ring flash flattens texture (shadowless = featureless). Ambient is usually too dim at f/8+ for macro work. A single small softbox 4-6 inches off the subject gives modeling shadow that reveals form.",
+            trace="Levon Biss methodology; macro standard practice",
+            violations=(
+                "ring-flash-flat lighting with no shadow direction",
+                "underexposed natural-light attempt with motion blur from slow shutter",
+                "harsh on-camera direct flash blowing out near-side",
+            ),
+        ),
+        Principle(
+            rule="Background is black, neutral, or far-defocused — never a competing texture at the same focal plane.",
+            why="At 1:1 magnification the background falls off so dramatically that even a meter behind looks like color wash. Use it. A black backdrop or a far-away color gradient makes the subject pop.",
+            trace="Shahan (black), Blossfeldt (neutral), Weston (sculpted shadow)",
+            violations=(
+                "background as in-focus as the subject (no separation)",
+                "competing texture at same DOF — grass blades behind the spider",
+                "color of background matches subject (camouflage)",
+            ),
+        ),
+        Principle(
+            rule="Front-most subject element on a rule-of-thirds anchor; lead with the eyes (insects) or focal point (water droplet).",
+            why="Macro is intimate. The eye lands on whatever is sharpest closest to the camera — make sure that's the most meaningful detail (mantis eye, droplet refraction, pistil).",
+            trace="Universal composition; especially load-bearing at macro magnification",
+            violations=(
+                "sharpest point not the most-important part of the subject",
+                "subject centered with no compositional reason",
+                "frame-edge too close — clipping antennae / petals",
+            ),
+        ),
+    ),
+    red_flags=(
+        "Single-frame DOF too shallow to carry the subject (no stacking)",
+        "Shot from above looking down — specimen-on-a-table angle",
+        "Ring-flash flatness — no modeling shadow on the subject",
+        "Background contains in-focus distracting elements",
+        "Frame edge clips body parts of the subject",
+    ),
+    aesthetic_targets=(
+        "Front-to-back sharpness via focus stacking",
+        "Eye-level (or lower) camera angle",
+        "Single soft directional light revealing texture",
+        "Background recedes to color wash or black",
+        "Sharpest point lands on the most meaningful detail",
+    ),
+)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # OTHER — fallback for things we don't have a tradition for
 # ─────────────────────────────────────────────────────────────────────────────
 OTHER = ScenarioKB(
@@ -767,6 +872,7 @@ KB: dict[Scenario, ScenarioKB] = {
     "action": ACTION,
     "architecture": ARCHITECTURE,
     "pets": PETS,
+    "macro": MACRO,
     "other": OTHER,
 }
 

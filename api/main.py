@@ -47,6 +47,7 @@ import openai_image
 import prompts
 import ratelimit
 import runware_image
+import stability_image
 from auth import Identity, identify
 from providers import ProviderConfig, get_provider_config, safe_repr
 from models import (
@@ -68,10 +69,12 @@ logger = logging.getLogger("poselab")
 
 app = FastAPI(
     title="PoseLab API",
-    version="0.4.0",
+    version="0.5.0",
     description=(
         "Photo enhancement prompt generator with BYOK provider config and "
-        "3 image-gen backends (Runware / OpenAI gpt-image-2 / fal.ai FLUX)."
+        "4 image-gen backends (Runware / OpenAI gpt-image-2 / Stability "
+        "SD3.5 / fal.ai FLUX). Knowledge base spans 9 scenarios including "
+        "macro photography."
     ),
 )
 
@@ -172,6 +175,7 @@ def server_config(
         "openai_image_configured": cfg.openai_image_configured,
         "fal_configured": cfg.fal_configured,
         "runware_configured": cfg.runware_configured,
+        "stability_configured": cfg.stability_configured,
         "active_image_provider": cfg.resolved_image_provider(),
         "ai_base_url": cfg.ai_base_url,
         "vision_model": cfg.vision_model,
@@ -179,6 +183,7 @@ def server_config(
         "openai_image_model": cfg.openai_image_model,
         "fal_model": cfg.fal_model,
         "runware_model": cfg.runware_model,
+        "stability_model": cfg.stability_model,
     }
 
 
@@ -520,6 +525,10 @@ async def generate(
     try:
         if provider == "runware":
             raw, duration_ms, model_id = await runware_image.generate(
+                prompt=body.prompt, image_bytes=source_bytes, cfg=cfg
+            )
+        elif provider == "stability":
+            raw, duration_ms, model_id = await stability_image.generate(
                 prompt=body.prompt, image_bytes=source_bytes, cfg=cfg
             )
         elif provider == "fal":

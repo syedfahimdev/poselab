@@ -406,6 +406,7 @@ const SCENARIO_LABEL: Record<string, string> = {
   action: "Action",
   architecture: "Architecture",
   pets: "Pets / kids",
+  macro: "Macro / close-up",
   other: "General photo",
 };
 

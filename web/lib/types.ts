@@ -126,6 +126,7 @@ export type Scenario =
   | "action"
   | "architecture"
   | "pets"
+  | "macro"
   | "other";
 
 /** Per-scenario overrides for category labels — only override what's different. */
@@ -136,6 +137,7 @@ const SCENARIO_LABEL_OVERRIDES: Partial<
   architecture: { pose: "Vantage & framing" },
   sunset: { pose: "Composition & framing" },
   action: { pose: "Moment & framing" },
+  macro: { pose: "Angle & magnification" },
   other: { pose: "Composition" },
 };
 
